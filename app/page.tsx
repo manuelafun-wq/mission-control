@@ -914,7 +914,7 @@ function ExecutiveOffice() {
               className="relative overflow-hidden rounded-full"
               style={{ width: 148, height: 148, boxShadow: "0 0 0 1px rgba(237,233,228,0.14), 0 12px 48px rgba(0,0,0,0.55)" }}
             >
-              <Image src="/images/noah.jpg" alt="Noah, Chief of Staff" fill className="object-cover object-top" sizes="148px" />
+              <Image src="/images/noah-v2.jpg" alt="Noah, Chief of Staff" fill className="object-cover object-top" sizes="148px" />
             </div>
             <div className="text-center">
               <h2
