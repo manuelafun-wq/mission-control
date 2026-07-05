@@ -1,0 +1,43 @@
+@import "tailwindcss";
+
+@theme inline {
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+  --font-serif: var(--font-playfair);
+}
+
+html {
+  background: linear-gradient(170deg, #F8F7F5 0%, #ECEBE8 100%);
+  min-height: 100%;
+}
+
+body {
+  color: #181614;
+  font-family: var(--font-sans), system-ui, sans-serif;
+  min-height: 100vh;
+}
+
+/* ── Welcome sequence ── */
+@keyframes mc-fadein  { from { opacity: 0; } to { opacity: 1; } }
+@keyframes mc-fadeout { from { opacity: 1; } to { opacity: 0; } }
+
+.anim-logo {
+  animation:
+    mc-fadein  1.4s 0.4s ease-out both,
+    mc-fadeout 1.0s 2.8s ease-in  both;
+  pointer-events: none;
+}
+.anim-greeting {
+  animation: mc-fadein 1.4s 4.1s ease-out both;
+  opacity: 0;
+}
+
+/* ── Inputs ── */
+.mc-input::placeholder         { color: rgba(24,22,20,0.3); }
+.mc-input:focus                { outline: none; border-color: rgba(168,138,58,0.5); }
+.mc-input-dark::placeholder    { color: rgba(237,233,228,0.22); }
+.mc-input-dark:focus           { outline: none; border-color: rgba(237,233,228,0.28); }
+
+/* ── Noah panel scrollbar ── */
+.noah-panel                    { overflow-y: auto; scrollbar-width: none; }
+.noah-panel::-webkit-scrollbar { display: none; }
