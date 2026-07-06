@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { generateBriefing } from "@/lib/noah/briefing";
 import { buildNoahContext } from "@/lib/noah/context";
 import type { NoahBriefing } from "@/lib/noah/types";
@@ -927,40 +928,58 @@ function ExecutiveOffice() {
 
             {/* Project cards */}
             <div className="grid grid-cols-3 gap-4">
-              {projects.map(({ name, subtitle, image, alt, Icon }) => (
-                <div
-                  key={name}
-                  className="group relative rounded-xl overflow-hidden cursor-pointer transition-all duration-500 hover:-translate-y-0.5"
-                  style={{ height: "12.5rem", boxShadow: "0 4px 20px rgba(20,18,16,0.18)" }}
-                >
-                  <Image
-                    src={image}
-                    alt={alt}
-                    fill
-                    className="object-cover transition-transform duration-700 group-hover:scale-105"
-                    sizes="(max-width: 1440px) 28vw, 300px"
-                  />
-                  <div
-                    className="absolute inset-0"
-                    style={{ background: "linear-gradient(to top, rgba(6,5,10,0.88) 0%, rgba(6,5,10,0.3) 55%, transparent 100%)" }}
-                  />
-                  <div className="absolute top-3 left-3">
-                    <Icon />
-                  </div>
-                  <div className="absolute bottom-0 left-0 right-0 flex items-end justify-between p-4">
-                    <div>
-                      <p className="font-medium text-white" style={{ fontSize: "0.9rem", lineHeight: 1.3 }}>{name}</p>
-                      <p className="font-light" style={{ fontSize: "0.72rem", color: "rgba(255,255,255,0.56)", lineHeight: 1.4, marginTop: "0.2rem" }}>{subtitle}</p>
-                    </div>
+              {projects.map(({ name, subtitle, image, alt, Icon }) => {
+                const slug = name.toLowerCase().replace(/\s+/g, "-");
+                const cardInner = (
+                  <>
+                    <Image
+                      src={image}
+                      alt={alt}
+                      fill
+                      className="object-cover transition-transform duration-700 group-hover:scale-105"
+                      sizes="(max-width: 1440px) 28vw, 300px"
+                    />
                     <div
-                      className="flex items-center justify-center rounded-full bg-white flex-shrink-0 transition-transform duration-300 group-hover:scale-105"
-                      style={{ width: 28, height: 28 }}
-                    >
-                      <ChevronRight color="#181614" />
+                      className="absolute inset-0"
+                      style={{ background: "linear-gradient(to top, rgba(6,5,10,0.88) 0%, rgba(6,5,10,0.3) 55%, transparent 100%)" }}
+                    />
+                    <div className="absolute top-3 left-3">
+                      <Icon />
                     </div>
+                    <div className="absolute bottom-0 left-0 right-0 flex items-end justify-between p-4">
+                      <div>
+                        <p className="font-medium text-white" style={{ fontSize: "0.9rem", lineHeight: 1.3 }}>{name}</p>
+                        <p className="font-light" style={{ fontSize: "0.72rem", color: "rgba(255,255,255,0.56)", lineHeight: 1.4, marginTop: "0.2rem" }}>{subtitle}</p>
+                      </div>
+                      <div
+                        className="flex items-center justify-center rounded-full bg-white flex-shrink-0 transition-transform duration-300 group-hover:scale-105"
+                        style={{ width: 28, height: 28 }}
+                      >
+                        <ChevronRight color="#181614" />
+                      </div>
+                    </div>
+                  </>
+                );
+
+                return name === "Mission Control" ? (
+                  <Link
+                    key={name}
+                    href={`/projects/${slug}`}
+                    className="group relative rounded-xl overflow-hidden cursor-pointer transition-all duration-500 hover:-translate-y-0.5"
+                    style={{ height: "12.5rem", boxShadow: "0 4px 20px rgba(20,18,16,0.18)", display: "block" }}
+                  >
+                    {cardInner}
+                  </Link>
+                ) : (
+                  <div
+                    key={name}
+                    className="group relative rounded-xl overflow-hidden cursor-pointer transition-all duration-500 hover:-translate-y-0.5"
+                    style={{ height: "12.5rem", boxShadow: "0 4px 20px rgba(20,18,16,0.18)" }}
+                  >
+                    {cardInner}
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
 
             {/* Action buttons */}
