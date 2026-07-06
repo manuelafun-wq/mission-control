@@ -1,4 +1,4 @@
-import type { NoahContext, NoahBriefing, BriefingMode } from "./types";
+import type { NoahContext, NoahBriefing, BriefingMode, VisionaryProfile } from "./types";
 import { generateRecommendations } from "./recommendations";
 
 // AI-ready entry point.
@@ -13,12 +13,11 @@ export async function generateBriefing(
 }
 
 // ── Morning Brief ─────────────────────────────────────────────────────────────
-// 30 seconds. One priority. Three observations with meaning, not activity.
 
 function composeMorning(ctx: NoahContext): NoahBriefing {
   return {
     mode:            "morning",
-    greeting:        buildGreeting(ctx.timeOfDay),
+    greeting:        buildGreeting(ctx.timeOfDay, ctx.visionary),
     observations:    buildMorningObservations(ctx),
     recommendations: generateRecommendations(ctx, 1),
     closingQuestion: buildClosingQuestion(ctx),
@@ -27,9 +26,10 @@ function composeMorning(ctx: NoahContext): NoahBriefing {
 
 function buildMorningObservations(ctx: NoahContext): string[] {
   const obs: string[] = [];
-  const { memory, activePhase } = ctx;
+  const { memory, activePhase, visionary } = ctx;
 
-  // Observation 1: strategic context with meaning
+  // Observation 1: Strategic system context.
+  // Systems thinker needs to see the big picture before anything else.
   if (activePhase.phase === 1) {
     obs.push(
       "Mission Control wordt het fundament voor alles wat daarna komt. " +
@@ -42,22 +42,31 @@ function buildMorningObservations(ctx: NoahContext): string[] {
     );
   }
 
-  // Observation 2: momentum or open slate — always about meaning
+  // Observation 2: Focus state — framed for a builder, not a manager.
   if (memory.projects.length > 0) {
     const top = memory.projects[0];
+    const verb = visionary.workingStyle.builderNotManager ? "bouwt aan" : "werkt aan";
     obs.push(
-      `Je sterkste momentum ligt momenteel bij ${top}. ` +
+      `Je sterkste energie gaat momenteel naar ${top}. ` +
       "Continuïteit heeft hier meer waarde dan intensiteit."
     );
   } else {
     obs.push(
       "Vandaag start met een open agenda. " +
-      "Dat is een krachtige positie — je kiest bewust waar de energie naartoe gaat."
+      "Dat is een krachtige positie — je kiest bewust waar je energie naartoe gaat."
     );
   }
 
-  // Observation 3: open items framed as meaning, not count
-  if (memory.decisions.length > 0) {
+  // Observation 3: Open items — framed around cognitive load and creative space.
+  const openDecisions = memory.decisions.length;
+  const maxComfortable = visionary.decisionStyle.maxComfortableOpenDecisions;
+
+  if (openDecisions > maxComfortable) {
+    obs.push(
+      `Er staan ${openDecisions} beslissingen open — meer dan jij prettig vindt. ` +
+      "Eén beslissing nemen vandaag schept ruimte voor de rest."
+    );
+  } else if (openDecisions > 0) {
     obs.push(
       "Er is een openstaande beslissing. " +
       "Een beslissing uitstellen kost stille energie. Nemen schept ruimte."
@@ -78,12 +87,11 @@ function buildMorningObservations(ctx: NoahContext): string[] {
 }
 
 // ── Deep Brief ────────────────────────────────────────────────────────────────
-// Full context. Three priorities. For when more detail is needed.
 
 function composeDeep(ctx: NoahContext): NoahBriefing {
   return {
     mode:            "deep",
-    greeting:        buildGreeting(ctx.timeOfDay),
+    greeting:        buildGreeting(ctx.timeOfDay, ctx.visionary),
     observations:    buildDeepObservations(ctx),
     recommendations: generateRecommendations(ctx, 3),
     closingQuestion: buildClosingQuestion(ctx),
@@ -117,18 +125,34 @@ function buildDeepObservations(ctx: NoahContext): string[] {
 
 // ── Shared ────────────────────────────────────────────────────────────────────
 
-function buildGreeting(timeOfDay: "morning" | "afternoon" | "evening"): string {
+function buildGreeting(
+  timeOfDay: "morning" | "afternoon" | "evening",
+  visionary: VisionaryProfile
+): string {
+  const firstName = visionary.name.split(" ")[0];
   return {
-    morning:   "Goedemorgen, Manuela.",
-    afternoon: "Goedemiddag, Manuela.",
-    evening:   "Goedenavond, Manuela.",
+    morning:   `Goedemorgen, ${firstName}.`,
+    afternoon: `Goedemiddag, ${firstName}.`,
+    evening:   `Goedenavond, ${firstName}.`,
   }[timeOfDay];
 }
 
 function buildClosingQuestion(ctx: NoahContext): string {
-  const { memory } = ctx;
+  const { memory, visionary } = ctx;
+
+  // If there are too many open decisions, help her pick one — don't add another question.
+  if (memory.decisions.length > visionary.decisionStyle.maxComfortableOpenDecisions) {
+    return "Welke van de openstaande beslissingen wil je als eerste nemen?";
+  }
+
   if (memory.decisions.length > 0) return "Welke beslissing wil je vandaag nemen?";
-  if (memory.ideas.length > 0)     return "Welk idee wil je vandaag in beweging brengen?";
-  if (memory.projects.length > 0)  return "Is er iets dat je aandacht nodig heeft voordat we beginnen?";
+
+  // For a long-term thinker, ask about impact — not about tasks.
+  if (visionary.workingStyle.longTermThinker) {
+    if (memory.projects.length > 0) return "Is er iets dat je aandacht nodig heeft voordat we beginnen?";
+    return "Waar wil je vandaag de meeste langetermijnwaarde creëren?";
+  }
+
+  if (memory.ideas.length > 0) return "Welk idee wil je vandaag in beweging brengen?";
   return "Waar wil je vandaag de meeste waarde creëren?";
 }

@@ -17,6 +17,41 @@ export interface RoadmapPhase {
   status: "done" | "in-progress" | "not-started";
 }
 
+export interface VisionaryProfile {
+  name: string;
+  mission: string;
+  longTermVision: string;
+  coreValues: string[];
+  workingStyle: {
+    thinkingMode:           "systems" | "tasks";
+    prefersSinglePriority:  boolean;
+    builderNotManager:      boolean;
+    needsCalmAndOverview:   boolean;
+    longTermThinker:        boolean;
+    needsUninterruptedTime: boolean;
+    wantsAIToReduceLoad:    boolean;
+  };
+  decisionStyle: {
+    needsOverviewBeforeDeciding:  boolean;
+    maxComfortableOpenDecisions:  number;
+    prefersSleepingOnMajorCalls: boolean;
+    trustsInstinctWhenClear:     boolean;
+  };
+  energyCreators: string[];
+  energyDrainers: string[];
+  communicationPreferences: {
+    short:                   boolean;
+    warmNotFamiliar:         boolean;
+    explainWhy:              boolean;
+    noFalseUrgency:          boolean;
+    opensThinkingNotCloses:  boolean;
+    strategicNotOperational: boolean;
+  };
+  optimizeFor:      string[];
+  neverOptimizeFor: string[];
+  definitionOfSuccess: string;
+}
+
 export interface NoahContext {
   date: string;
   timeOfDay: "morning" | "afternoon" | "evening";
@@ -24,6 +59,7 @@ export interface NoahContext {
   recentCompletions: BuildOrder[];
   activePhase: RoadmapPhase;
   allProjects: string[];
+  visionary: VisionaryProfile;
 }
 
 export interface ScoreBreakdown {

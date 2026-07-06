@@ -1,4 +1,5 @@
 import type { MemorySnapshot, BuildOrder, RoadmapPhase, NoahContext } from "./types";
+import { VISIONARY } from "./visionary";
 
 export const ALL_PROJECTS = [
   "AYA",
@@ -91,5 +92,6 @@ export function buildNoahContext(memory: MemorySnapshot): NoahContext {
     recentCompletions,
     activePhase,
     allProjects: ALL_PROJECTS,
+    visionary: VISIONARY,
   };
 }
