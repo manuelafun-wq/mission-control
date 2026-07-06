@@ -143,3 +143,24 @@ The Mission Control logo is a crosshair — a precision instrument symbol.
 It represents: focus, targeting, intentionality.
 Color: gold `#A88A3A`.
 It appears only in the header. It does not repeat.
+
+---
+
+## Design library
+
+Visual references, persona boards, and design assets live in `docs/design/`.
+
+| Folder | Contents |
+|--------|----------|
+| `docs/design/noah/` | Noah persona board, visual identity documentation |
+| `docs/design/mission-control/` | UI references, screen compositions |
+| `docs/design/inspiration/` | Mood references, aesthetic direction |
+
+### Noah visual identity
+
+Noah has a defined visual identity with three modes (Executive, Reflective, Creative), a canonical age range (40–55), and a world-citizen ethnicity that is deliberately ambiguous.
+
+Full specification: [`docs/design/noah/README.md`](design/noah/README.md)
+Canonical reference image: `docs/design/noah/noah-persona-board.png`
+
+All Noah portraits used in Mission Control must conform to this specification.

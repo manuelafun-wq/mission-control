@@ -2,6 +2,9 @@
 
 import { useState, useEffect } from "react";
 import Image from "next/image";
+import { generateBriefing } from "@/lib/noah/briefing";
+import { buildNoahContext } from "@/lib/noah/context";
+import type { NoahBriefing } from "@/lib/noah/types";
 
 // ── Icons ─────────────────────────────────────────────────────────────────────
 
@@ -457,9 +460,11 @@ function OverlayHeader() {
 // ── Briefing Overlay ──────────────────────────────────────────────────────────
 
 function BriefingOverlay({
+  briefing,
   onAccept,
   onChooseOther,
 }: {
+  briefing: NoahBriefing | null;
   onAccept: () => void;
   onChooseOther: () => void;
 }) {
@@ -474,67 +479,84 @@ function BriefingOverlay({
       <OverlayCard visible={visible}>
         <OverlayHeader />
 
-        <div style={{ display: "flex", flexDirection: "column", gap: "1.375rem" }}>
-          <h2
-            style={{
-              fontFamily: "var(--font-playfair), Georgia, serif",
-              fontSize: "1.875rem",
-              color: "#181614",
-              letterSpacing: "-0.02em",
-              lineHeight: 1.1,
-              fontWeight: 400,
-            }}
-          >
-            Goedemorgen, Manuela.
-          </h2>
-
-          <p style={{ fontSize: "0.9375rem", color: "#68645F", lineHeight: 1.8 }}>
-            Ik heb je dag voorbereid.
-          </p>
-
-          <div>
-            <p style={{ fontSize: "0.78rem", fontWeight: 600, color: "#181614", letterSpacing: "0.04em", marginBottom: "0.625rem" }}>
-              Mijn voorstel:
-            </p>
-            <ol style={{ paddingLeft: "1.25rem", display: "flex", flexDirection: "column", gap: "0.3rem", listStyleType: "decimal" }}>
-              {["AYA", "Mission Control", "Website"].map((p) => (
-                <li key={p} style={{ fontSize: "0.9375rem", color: "#3A3530", lineHeight: 1.7 }}>{p}</li>
-              ))}
-            </ol>
+        {briefing === null ? (
+          <div style={{ display: "flex", flexDirection: "column", gap: "1rem", minHeight: "12rem", justifyContent: "center" }}>
+            <div style={{ width: "60%", height: "2rem", borderRadius: "0.5rem", background: "#EEECEA" }} />
+            <div style={{ width: "90%", height: "1rem", borderRadius: "0.5rem", background: "#EEECEA" }} />
+            <div style={{ width: "75%", height: "1rem", borderRadius: "0.5rem", background: "#EEECEA" }} />
           </div>
+        ) : (
+          <div style={{ display: "flex", flexDirection: "column", gap: "1.375rem" }}>
+            <h2
+              style={{
+                fontFamily: "var(--font-playfair), Georgia, serif",
+                fontSize: "1.875rem",
+                color: "#181614",
+                letterSpacing: "-0.02em",
+                lineHeight: 1.1,
+                fontWeight: 400,
+              }}
+            >
+              {briefing.greeting}
+            </h2>
 
-          <div>
-            <p style={{ fontSize: "0.78rem", fontWeight: 600, color: "#181614", letterSpacing: "0.04em", marginBottom: "0.625rem" }}>
-              Er wacht vandaag:
-            </p>
-            <ul style={{ paddingLeft: "1.25rem", display: "flex", flexDirection: "column", gap: "0.3rem", listStyleType: "disc" }}>
-              {["1 beslissing", "2 collega's op input", "1 nieuw idee"].map((item) => (
-                <li key={item} style={{ fontSize: "0.9375rem", color: "#3A3530", lineHeight: 1.7 }}>{item}</li>
+            <div style={{ display: "flex", flexDirection: "column", gap: "0.625rem" }}>
+              {briefing.observations.map((obs, i) => (
+                <p key={i} style={{ fontSize: "0.9375rem", color: "#68645F", lineHeight: 1.8 }}>
+                  {obs}
+                </p>
               ))}
-            </ul>
-          </div>
+            </div>
 
-          <p style={{ fontSize: "0.9375rem", color: "#68645F", lineHeight: 1.8 }}>
-            Wil je mijn voorstel volgen of de koers wijzigen?
-          </p>
-        </div>
+            <div>
+              <p style={{ fontSize: "0.78rem", fontWeight: 600, color: "#181614", letterSpacing: "0.04em", marginBottom: "0.875rem" }}>
+                Mijn aanbeveling voor vandaag:
+              </p>
+              <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
+                {briefing.recommendations.map(({ project, reason }) => (
+                  <div key={project} style={{ display: "flex", gap: "0.875rem", alignItems: "flex-start" }}>
+                    <span
+                      style={{
+                        width: 6,
+                        height: 6,
+                        borderRadius: "50%",
+                        background: "#A88A3A",
+                        flexShrink: 0,
+                        marginTop: "0.55rem",
+                      }}
+                    />
+                    <div>
+                      <p style={{ fontSize: "0.9375rem", color: "#2A2724", fontWeight: 500, lineHeight: 1.4 }}>{project}</p>
+                      <p style={{ fontSize: "0.8125rem", color: "#908A84", lineHeight: 1.7, marginTop: "0.15rem" }}>{reason}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <p style={{ fontSize: "0.9375rem", color: "#68645F", lineHeight: 1.8 }}>
+              {briefing.closingQuestion}
+            </p>
+          </div>
+        )}
 
         <div style={{ display: "flex", gap: "0.875rem", marginTop: "2.25rem" }}>
           <button
             onClick={onAccept}
+            disabled={briefing === null}
             style={{
               flex: 1,
-              background: "#181614",
-              color: "#EDE9E4",
+              background: briefing === null ? "#EEECEA" : "#181614",
+              color: briefing === null ? "#B8B4AE" : "#EDE9E4",
               borderRadius: "0.75rem",
               padding: "0.9rem 1.25rem",
               fontSize: "0.9375rem",
               fontWeight: 500,
               border: "none",
-              cursor: "pointer",
+              cursor: briefing === null ? "default" : "pointer",
               transition: "opacity 0.25s ease",
             }}
-            onMouseEnter={(e) => { e.currentTarget.style.opacity = "0.8"; }}
+            onMouseEnter={(e) => { if (briefing) e.currentTarget.style.opacity = "0.8"; }}
             onMouseLeave={(e) => { e.currentTarget.style.opacity = "1"; }}
           >
             Laten we beginnen
@@ -703,6 +725,7 @@ function ExecutiveOffice() {
   const [visible, setVisible] = useState(false);
   const [briefingOpen, setBriefingOpen] = useState(false);
   const [projectPickerOpen, setProjectPickerOpen] = useState(false);
+  const [briefing, setBriefing] = useState<NoahBriefing | null>(null);
   const memory = useMissionMemory();
   const todayPlan = memory.projects.length > 0 ? memory.projects : null;
 
@@ -711,9 +734,22 @@ function ExecutiveOffice() {
     return () => clearTimeout(t);
   }, []);
 
+  const openBriefing = () => {
+    setBriefing(null);
+    setBriefingOpen(true);
+    const ctx = buildNoahContext({
+      projects:  memory.projects,
+      ideas:     memory.ideas,
+      decisions: memory.decisions,
+    });
+    generateBriefing(ctx).then(setBriefing);
+  };
+
   const handleAccept = () => {
     setBriefingOpen(false);
-    memory.savePlan(["AYA", "Mission Control", "Website"]);
+    if (briefing) {
+      memory.savePlan(briefing.recommendations.map((r) => r.project));
+    }
   };
 
   const handleChooseOther = () => {
@@ -783,7 +819,7 @@ function ExecutiveOffice() {
 
           {/* Begin briefing button */}
           <button
-            onClick={() => setBriefingOpen(true)}
+            onClick={openBriefing}
             className="flex items-center justify-center gap-3 transition-all duration-500 hover:opacity-75"
             style={{
               background: "rgba(248,247,245,0.92)",
@@ -914,7 +950,7 @@ function ExecutiveOffice() {
               className="relative overflow-hidden rounded-full"
               style={{ width: 148, height: 148, boxShadow: "0 0 0 1px rgba(237,233,228,0.14), 0 12px 48px rgba(0,0,0,0.55)" }}
             >
-              <Image src="/images/noah-v3.jpg" alt="Noah, Chief of Staff" fill className="object-cover object-top" sizes="148px" />
+              <Image src="/images/noah-v3.jpg" alt="Noah, Chief of Staff" fill className="object-cover" style={{ objectPosition: "65% 15%" }} sizes="148px" />
             </div>
             <div className="text-center">
               <h2
@@ -984,6 +1020,7 @@ function ExecutiveOffice() {
       {/* ── Overlays ── */}
       {briefingOpen && (
         <BriefingOverlay
+          briefing={briefing}
           onAccept={handleAccept}
           onChooseOther={handleChooseOther}
         />
