@@ -509,12 +509,12 @@ function BriefingOverlay({
             </div>
 
             <div>
-              <p style={{ fontSize: "0.78rem", fontWeight: 600, color: "#181614", letterSpacing: "0.04em", marginBottom: "0.875rem" }}>
+              <p style={{ fontSize: "0.78rem", fontWeight: 600, color: "#181614", letterSpacing: "0.04em", marginBottom: "1rem" }}>
                 Mijn aanbeveling voor vandaag:
               </p>
-              <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
-                {briefing.recommendations.map(({ project, reason }) => (
-                  <div key={project} style={{ display: "flex", gap: "0.875rem", alignItems: "flex-start" }}>
+              <div style={{ display: "flex", flexDirection: "column", gap: "1.25rem" }}>
+                {briefing.recommendations.map(({ project, whyItMatters, whyNow, nextAction }) => (
+                  <div key={project} style={{ display: "flex", gap: "1rem", alignItems: "flex-start" }}>
                     <span
                       style={{
                         width: 6,
@@ -522,12 +522,19 @@ function BriefingOverlay({
                         borderRadius: "50%",
                         background: "#A88A3A",
                         flexShrink: 0,
-                        marginTop: "0.55rem",
+                        marginTop: "0.45rem",
                       }}
                     />
-                    <div>
-                      <p style={{ fontSize: "0.9375rem", color: "#2A2724", fontWeight: 500, lineHeight: 1.4 }}>{project}</p>
-                      <p style={{ fontSize: "0.8125rem", color: "#908A84", lineHeight: 1.7, marginTop: "0.15rem" }}>{reason}</p>
+                    <div style={{ display: "flex", flexDirection: "column", gap: "0.25rem" }}>
+                      <p style={{ fontSize: "0.9375rem", color: "#2A2724", fontWeight: 500, lineHeight: 1.3 }}>
+                        {project}
+                      </p>
+                      <p style={{ fontSize: "0.8125rem", color: "#68645F", lineHeight: 1.75 }}>
+                        {whyItMatters} {whyNow}
+                      </p>
+                      <p style={{ fontSize: "0.75rem", color: "#A88A3A", lineHeight: 1.6, marginTop: "0.1rem" }}>
+                        → {nextAction}
+                      </p>
                     </div>
                   </div>
                 ))}
