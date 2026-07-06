@@ -26,28 +26,30 @@ export interface NoahContext {
   allProjects: string[];
 }
 
-// Internal scoring breakdown — not surfaced in the briefing, but useful for
-// debugging and for the future AI layer to understand what drove the ranking.
 export interface ScoreBreakdown {
-  strategicImportance: number; // 0–10
-  dependencies:        number; // 0–10
-  momentum:            number; // 0–10
-  userFocus:           number; // 0–10
-  longTermValue:       number; // 0–10
-  total:               number; // weighted composite
+  strategicImportance: number;
+  dependencies:        number;
+  momentum:            number;
+  userFocus:           number;
+  longTermValue:       number;
+  total:               number;
 }
 
 export interface NoahRecommendation {
-  project:      string;
-  whyItMatters: string; // what makes this project important
-  whyNow:       string; // why today is the right moment
-  nextAction:   string; // one concrete thing to do
-  score:        ScoreBreakdown;
+  project:       string;
+  whyItMatters:  string; // the strategic importance, one sentence
+  whyNow:        string; // why today specifically
+  longTermValue: string; // what compounding impact this creates over time
+  nextAction:    string; // one concrete thing to do
+  score:         ScoreBreakdown;
 }
 
+export type BriefingMode = "morning" | "deep";
+
 export interface NoahBriefing {
+  mode:            BriefingMode;
   greeting:        string;
-  observations:    string[];
-  recommendations: NoahRecommendation[];
+  observations:    string[];    // max 3 in morning, max 2 in deep
+  recommendations: NoahRecommendation[]; // 1 in morning, 3 in deep
   closingQuestion: string;
 }

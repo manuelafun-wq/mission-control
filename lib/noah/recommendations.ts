@@ -1,7 +1,6 @@
 import type { NoahContext, NoahRecommendation, ScoreBreakdown } from "./types";
 
 // ── Scoring weights ───────────────────────────────────────────────────────────
-// Must sum to 1.0. Adjust here to change Noah's decision-making philosophy.
 
 const WEIGHTS = {
   strategicImportance: 0.30,
@@ -12,8 +11,6 @@ const WEIGHTS = {
 } as const;
 
 // ── Static project knowledge ──────────────────────────────────────────────────
-// These are Noah's baseline assessments, grounded in the company's mission
-// and roadmap. They represent informed professional judgment, not preference.
 
 interface ProjectKnowledge {
   strategicImportance: number;
@@ -22,7 +19,8 @@ interface ProjectKnowledge {
   longTermValue:       number;
   whyItMatters:        string;
   whyNowDefault:       string;
-  whyNowIfFocused:     string; // used when user has been actively selecting this project
+  whyNowIfFocused:     string;
+  longTermValueText:   string;
   nextAction:          string;
 }
 
@@ -32,144 +30,146 @@ const PROJECT_KNOWLEDGE: Record<string, ProjectKnowledge> = {
     dependencies:        9,
     baseMomentum:        9,
     longTermValue:       10,
-    whyItMatters:   "Het fundament van alles wat je bouwt. Elk uur hier werkt door in alle andere projecten.",
-    whyNowDefault:  "Phase 1 is bijna klaar. Afmaken nu versnelt alles daarna.",
-    whyNowIfFocused:"Je hebt hier de afgelopen tijd momentum opgebouwd. Doorzetten.",
-    nextAction:     "Definieer wat Phase 2 (Projects) er concreet uit gaat zien.",
+    whyItMatters:      "Mission Control is het fundament. Alles wat je hier bouwt, versnelt elk ander project.",
+    whyNowDefault:     "Phase 1 is bijna klaar. Dit is het moment om het fundament af te maken.",
+    whyNowIfFocused:   "Je hebt hier de afgelopen tijd momentum opgebouwd. Doorzetten heeft nu het meeste rendement.",
+    longTermValueText: "Elke verbetering hier werkt door in alle acht projecten tegelijk. De samengestelde waarde is enorm.",
+    nextAction:        "Definieer wat Phase 2 (Projects) er concreet uit gaat zien.",
   },
   "AYA": {
     strategicImportance: 9,
     dependencies:        4,
     baseMomentum:        7,
     longTermValue:       10,
-    whyItMatters:   "De kern van jouw missie. Financiële autonomie voor iedereen begint hier.",
-    whyNowDefault:  "De architectuur die je in Mission Control opbouwt, is direct herbruikbaar in AYA.",
-    whyNowIfFocused:"Je bent hier actief mee bezig. Geen betere tijd dan nu.",
-    nextAction:     "Definieer het volgende productmijlpaal en toets het aan de kernmissie.",
+    whyItMatters:      "AYA is de kern van jouw missie. Financiële autonomie voor iedereen begint hier.",
+    whyNowDefault:     "De architectuur die je in Mission Control opbouwt, is direct herbruikbaar in AYA.",
+    whyNowIfFocused:   "Je bent hier actief mee bezig. Geen betere tijd dan nu om door te pakken.",
+    longTermValueText: "AYA heeft het potentieel om de meeste mensen te bereiken van alles wat je bouwt.",
+    nextAction:        "Definieer het volgende productmijlpaal en toets het aan de kernmissie.",
   },
   "Website": {
     strategicImportance: 7,
     dependencies:        5,
     baseMomentum:        6,
     longTermValue:       7,
-    whyItMatters:   "Jouw publieke gezicht. Hier ontdekken mensen wie Manuela Fun is en wat ze kan.",
-    whyNowDefault:  "Voortgang publiceren creëert extern momentum en geloofwaardigheid.",
-    whyNowIfFocused:"Je hebt dit onlangs aandacht gegeven. Één extra stap heeft nu het meeste effect.",
-    nextAction:     "Publiceer één concreet bewijs van voortgang — hoe klein ook.",
+    whyItMatters:      "Jouw website is het publieke bewijs van wie je bent en wat je doet.",
+    whyNowDefault:     "Voortgang zichtbaar maken creëert externe geloofwaardigheid en trekt de juiste mensen aan.",
+    whyNowIfFocused:   "Je hebt hier recent energie ingestoken. Eén stap verder heeft nu het meeste zichtbare effect.",
+    longTermValueText: "Een sterke online aanwezigheid samengesteld over tijd. Elke publicatie voegt vertrouwen toe.",
+    nextAction:        "Publiceer één concreet bewijs van voortgang — hoe klein ook.",
   },
   "Menskompas": {
     strategicImportance: 7,
     dependencies:        3,
     baseMomentum:        5,
     longTermValue:       8,
-    whyItMatters:   "Diepgaand werk over menselijke groei. Potentieel voor impact op grote schaal.",
-    whyNowDefault:  "Dit soort werk gedijt bij aandacht die niet wordt opgeëist door urgentie.",
-    whyNowIfFocused:"Je hebt hier recent energie in gestoken. Goed moment om dat vast te houden.",
-    nextAction:     "Zet de eerstvolgende stap in de inhoudsontwikkeling.",
+    whyItMatters:      "Menskompas gaat over menselijke groei op een schaal die persoonlijk aanvoelt.",
+    whyNowDefault:     "Dit soort werk gedijt bij aandacht die niet wordt opgeëist door urgentie.",
+    whyNowIfFocused:   "Je hebt hier recent energie in gestoken. Goed moment om dat vast te houden.",
+    longTermValueText: "Diepgaand werk over menselijke ontwikkeling heeft een lange halfwaardetijd. Het blijft relevant.",
+    nextAction:        "Zet de eerstvolgende stap in de inhoudsontwikkeling.",
   },
   "Kwetsbaar Evenwicht": {
     strategicImportance: 7,
     dependencies:        2,
     baseMomentum:        5,
     longTermValue:       8,
-    whyItMatters:   "Betekenisvol werk vraagt ruimte. Dit project beloont langetermijndenken.",
-    whyNowDefault:  "Creatief werk gedijt bij regelmatige, ongestoorde aandacht.",
-    whyNowIfFocused:"Je bent er al mee bezig. Momentum is kostbaar — gebruik het.",
-    nextAction:     "Zet een uur apart voor ongestoord, diep werk.",
+    whyItMatters:      "Kwetsbaar Evenwicht vraagt ruimte. Het beloont langetermijndenken en consequente aandacht.",
+    whyNowDefault:     "Creatief werk gedijt bij regelmatige, ongestoorde aandacht — niet bij sporadische momenten.",
+    whyNowIfFocused:   "Je bent er al mee bezig. Momentum is kostbaar — gebruik het.",
+    longTermValueText: "Betekenisvol creatief werk met een lange doorwerking. De impact verschijnt niet direct, maar is blijvend.",
+    nextAction:        "Zet een uur apart voor ongestoord, diep werk.",
   },
   "Podcast": {
     strategicImportance: 6,
     dependencies:        3,
     baseMomentum:        5,
     longTermValue:       7,
-    whyItMatters:   "Een podcastkanaal bouwt een publiek op over tijd. Consistentie is alles.",
-    whyNowDefault:  "Regelmatige publicatie heeft meer waarde dan perfecte afleveringen.",
-    whyNowIfFocused:"Je hebt dit recent aandacht gegeven. Doorzetten versterkt het ritme.",
-    nextAction:     "Plan de volgende opname of publiceer een uitstaande aflevering.",
+    whyItMatters:      "Een podcastkanaal bouwt een publiek op over tijd. Consistentie is het enige dat telt.",
+    whyNowDefault:     "Regelmatige publicatie heeft meer waarde dan perfecte afleveringen.",
+    whyNowIfFocused:   "Je hebt dit recent aandacht gegeven. Doorzetten versterkt het ritme.",
+    longTermValueText: "Elk gepubliceerde aflevering samengesteld over maanden en jaren. Het publiek groeit als je het bijhoudt.",
+    nextAction:        "Plan de volgende opname of publiceer een uitstaande aflevering.",
   },
   "House of Navutiita": {
     strategicImportance: 6,
     dependencies:        2,
     baseMomentum:        4,
     longTermValue:       8,
-    whyItMatters:   "Een cultureel project met langetermijnwaarde en persoonlijke betekenis.",
-    whyNowDefault:  "Kleine, regelmatige aandacht houdt dit project in beweging.",
-    whyNowIfFocused:"Je hebt dit onlangs opgepakt. Continuïteit heeft hier meer waarde dan intensiteit.",
-    nextAction:     "Identificeer één tastbare volgende stap — hoe concreet mogelijk.",
+    whyItMatters:      "House of Navutiita heeft culturele en persoonlijke betekenis die niet gehaast kan worden.",
+    whyNowDefault:     "Kleine, regelmatige aandacht houdt dit project in beweging zonder het te forceren.",
+    whyNowIfFocused:   "Je hebt dit onlangs opgepakt. Continuïteit heeft hier meer waarde dan intensiteit.",
+    longTermValueText: "Cultureel werk dat gebouwd wordt over jaren. De waarde neemt toe naarmate het groeide.",
+    nextAction:        "Identificeer één tastbare volgende stap — hoe concreet mogelijk.",
   },
   "AI Business": {
     strategicImportance: 8,
     dependencies:        6,
     baseMomentum:        6,
     longTermValue:       9,
-    whyItMatters:   "De wereld beweegt snel. Een strategische positie in AI is nu te nemen — straks minder.",
-    whyNowDefault:  "Het momentum in de AI-markt is op dit moment uitzonderlijk. Timing telt hier.",
-    whyNowIfFocused:"Je hebt al richting gekozen. Doorzetten terwijl het marktmoment open staat.",
-    nextAction:     "Definieer het eerste concrete aanbod of experiment.",
+    whyItMatters:      "De wereld beweegt snel. Een strategische positie in AI is nu te nemen — straks minder.",
+    whyNowDefault:     "Het momentum in de AI-markt is op dit moment uitzonderlijk. Timing telt hier.",
+    whyNowIfFocused:   "Je hebt al richting gekozen. Doorzetten terwijl het marktmoment open staat.",
+    longTermValueText: "Vroeg positioneren in een markt die nog opengaat, creëert een voorsprong die moeilijk in te halen is.",
+    nextAction:        "Definieer het eerste concrete aanbod of experiment.",
   },
 };
 
 // ── Scoring engine ────────────────────────────────────────────────────────────
 
 function scoreProject(project: string, ctx: NoahContext): ScoreBreakdown {
-  const knowledge = PROJECT_KNOWLEDGE[project];
-  if (!knowledge) {
+  const k = PROJECT_KNOWLEDGE[project];
+  if (!k) {
     return { strategicImportance: 5, dependencies: 5, momentum: 5, userFocus: 0, longTermValue: 5, total: 5 };
   }
 
-  const userFocus = ctx.memory.projects.includes(project) ? 10 : 0;
-
-  // Momentum gets a boost if this is the active-phase project
-  const isPhaseProject = project === "Mission Control" && ctx.activePhase.phase === 1;
-  const momentum = Math.min(10, knowledge.baseMomentum + (isPhaseProject ? 1 : 0));
+  const userFocus  = ctx.memory.projects.includes(project) ? 10 : 0;
+  const isActive   = project === "Mission Control" && ctx.activePhase.phase === 1;
+  const momentum   = Math.min(10, k.baseMomentum + (isActive ? 1 : 0));
 
   const total =
-    knowledge.strategicImportance * WEIGHTS.strategicImportance +
-    knowledge.longTermValue       * WEIGHTS.longTermValue +
-    momentum                      * WEIGHTS.momentum +
-    knowledge.dependencies        * WEIGHTS.dependencies +
-    userFocus                     * WEIGHTS.userFocus;
+    k.strategicImportance * WEIGHTS.strategicImportance +
+    k.longTermValue        * WEIGHTS.longTermValue +
+    momentum               * WEIGHTS.momentum +
+    k.dependencies         * WEIGHTS.dependencies +
+    userFocus              * WEIGHTS.userFocus;
 
   return {
-    strategicImportance: knowledge.strategicImportance,
-    dependencies:        knowledge.dependencies,
+    strategicImportance: k.strategicImportance,
+    dependencies:        k.dependencies,
     momentum,
     userFocus,
-    longTermValue:       knowledge.longTermValue,
+    longTermValue:       k.longTermValue,
     total,
   };
 }
 
 // ── Language layer ────────────────────────────────────────────────────────────
-// These functions produce the human-readable parts of the recommendation.
-// This is the layer that gets replaced when Claude or OpenAI is connected —
-// the scoring above stays unchanged.
+// Replaced by AI when connected — scoring above does not change.
 
 function buildWhyNow(project: string, score: ScoreBreakdown, ctx: NoahContext): string {
-  const knowledge = PROJECT_KNOWLEDGE[project];
-  if (!knowledge) return "De timing is goed voor dit project.";
-  return score.userFocus > 0
-    ? knowledge.whyNowIfFocused
-    : knowledge.whyNowDefault;
+  const k = PROJECT_KNOWLEDGE[project];
+  if (!k) return "De timing is goed voor dit project.";
+  return score.userFocus > 0 ? k.whyNowIfFocused : k.whyNowDefault;
 }
 
 // ── Public API ────────────────────────────────────────────────────────────────
 
-export function generateRecommendations(ctx: NoahContext): NoahRecommendation[] {
-  const scored = ctx.allProjects
+export function generateRecommendations(ctx: NoahContext, limit = 3): NoahRecommendation[] {
+  return ctx.allProjects
     .map((project) => {
       const score = scoreProject(project, ctx);
-      const knowledge = PROJECT_KNOWLEDGE[project];
-      return { project, score, knowledge };
+      const k     = PROJECT_KNOWLEDGE[project];
+      return { project, score, k };
     })
     .sort((a, b) => b.score.total - a.score.total)
-    .slice(0, 3);
-
-  return scored.map(({ project, score, knowledge }) => ({
-    project,
-    whyItMatters: knowledge?.whyItMatters ?? "Een belangrijk project.",
-    whyNow:       buildWhyNow(project, score, ctx),
-    nextAction:   knowledge?.nextAction ?? "Identificeer de volgende stap.",
-    score,
-  }));
+    .slice(0, limit)
+    .map(({ project, score, k }) => ({
+      project,
+      whyItMatters:    k?.whyItMatters    ?? "Een belangrijk project.",
+      whyNow:          buildWhyNow(project, score, ctx),
+      longTermValue:   k?.longTermValueText ?? "Langetermijnwaarde die zich samengesteld opbouwt.",
+      nextAction:      k?.nextAction      ?? "Identificeer de volgende stap.",
+      score,
+    }));
 }

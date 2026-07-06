@@ -457,6 +457,133 @@ function OverlayHeader() {
   );
 }
 
+// ── Morning Brief layout ──────────────────────────────────────────────────────
+
+function MorningBrief({ briefing }: { briefing: NoahBriefing }) {
+  const [rec] = briefing.recommendations;
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
+      <h2
+        style={{
+          fontFamily: "var(--font-playfair), Georgia, serif",
+          fontSize: "1.875rem",
+          color: "#181614",
+          letterSpacing: "-0.02em",
+          lineHeight: 1.1,
+          fontWeight: 400,
+        }}
+      >
+        {briefing.greeting}
+      </h2>
+
+      {/* Observations — meaning, not activity */}
+      <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
+        {briefing.observations.map((obs, i) => (
+          <p key={i} style={{ fontSize: "0.9375rem", color: "#68645F", lineHeight: 1.8 }}>
+            {obs}
+          </p>
+        ))}
+      </div>
+
+      {/* Single recommendation */}
+      {rec && (
+        <>
+          <div style={{ height: 1, background: "#EEECEA" }} />
+          <div>
+            <p style={{ fontSize: "0.68rem", fontWeight: 600, color: "#908A84", letterSpacing: "0.16em", textTransform: "uppercase", marginBottom: "0.75rem" }}>
+              Focus vandaag op
+            </p>
+            <p
+              style={{
+                fontFamily: "var(--font-playfair), Georgia, serif",
+                fontSize: "1.5rem",
+                color: "#181614",
+                fontWeight: 400,
+                letterSpacing: "-0.01em",
+                lineHeight: 1.15,
+                marginBottom: "1rem",
+              }}
+            >
+              {rec.project}
+            </p>
+            <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+              <p style={{ fontSize: "0.875rem", color: "#3A3530", lineHeight: 1.8 }}>
+                {rec.whyItMatters}
+              </p>
+              <p style={{ fontSize: "0.875rem", color: "#68645F", lineHeight: 1.8 }}>
+                {rec.whyNow}
+              </p>
+              <p style={{ fontSize: "0.8125rem", color: "#908A84", lineHeight: 1.75, fontStyle: "italic" }}>
+                {rec.longTermValue}
+              </p>
+            </div>
+            <p style={{ fontSize: "0.8125rem", color: "#A88A3A", marginTop: "0.875rem", lineHeight: 1.6 }}>
+              → {rec.nextAction}
+            </p>
+          </div>
+        </>
+      )}
+
+      <div style={{ height: 1, background: "#EEECEA" }} />
+
+      <p style={{ fontSize: "0.9375rem", color: "#68645F", lineHeight: 1.8 }}>
+        {briefing.closingQuestion}
+      </p>
+    </div>
+  );
+}
+
+// ── Deep Brief layout ─────────────────────────────────────────────────────────
+
+function DeepBrief({ briefing }: { briefing: NoahBriefing }) {
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: "1.375rem" }}>
+      <h2
+        style={{
+          fontFamily: "var(--font-playfair), Georgia, serif",
+          fontSize: "1.875rem",
+          color: "#181614",
+          letterSpacing: "-0.02em",
+          lineHeight: 1.1,
+          fontWeight: 400,
+        }}
+      >
+        {briefing.greeting}
+      </h2>
+
+      <div style={{ display: "flex", flexDirection: "column", gap: "0.625rem" }}>
+        {briefing.observations.map((obs, i) => (
+          <p key={i} style={{ fontSize: "0.9375rem", color: "#68645F", lineHeight: 1.8 }}>
+            {obs}
+          </p>
+        ))}
+      </div>
+
+      <div>
+        <p style={{ fontSize: "0.78rem", fontWeight: 600, color: "#181614", letterSpacing: "0.04em", marginBottom: "1rem" }}>
+          Mijn aanbeveling voor vandaag:
+        </p>
+        <div style={{ display: "flex", flexDirection: "column", gap: "1.25rem" }}>
+          {briefing.recommendations.map(({ project, whyItMatters, whyNow, nextAction }) => (
+            <div key={project} style={{ display: "flex", gap: "1rem", alignItems: "flex-start" }}>
+              <span style={{ width: 6, height: 6, borderRadius: "50%", background: "#A88A3A", flexShrink: 0, marginTop: "0.45rem" }} />
+              <div style={{ display: "flex", flexDirection: "column", gap: "0.25rem" }}>
+                <p style={{ fontSize: "0.9375rem", color: "#2A2724", fontWeight: 500, lineHeight: 1.3 }}>{project}</p>
+                <p style={{ fontSize: "0.8125rem", color: "#68645F", lineHeight: 1.75 }}>{whyItMatters} {whyNow}</p>
+                <p style={{ fontSize: "0.75rem", color: "#A88A3A", lineHeight: 1.6, marginTop: "0.1rem" }}>→ {nextAction}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <p style={{ fontSize: "0.9375rem", color: "#68645F", lineHeight: 1.8 }}>
+        {briefing.closingQuestion}
+      </p>
+    </div>
+  );
+}
+
 // ── Briefing Overlay ──────────────────────────────────────────────────────────
 
 function BriefingOverlay({
@@ -480,71 +607,16 @@ function BriefingOverlay({
         <OverlayHeader />
 
         {briefing === null ? (
-          <div style={{ display: "flex", flexDirection: "column", gap: "1rem", minHeight: "12rem", justifyContent: "center" }}>
-            <div style={{ width: "60%", height: "2rem", borderRadius: "0.5rem", background: "#EEECEA" }} />
-            <div style={{ width: "90%", height: "1rem", borderRadius: "0.5rem", background: "#EEECEA" }} />
-            <div style={{ width: "75%", height: "1rem", borderRadius: "0.5rem", background: "#EEECEA" }} />
+          <div style={{ display: "flex", flexDirection: "column", gap: "1rem", minHeight: "14rem", justifyContent: "center" }}>
+            <div style={{ width: "55%", height: "2rem", borderRadius: "0.5rem", background: "#EEECEA" }} />
+            <div style={{ width: "88%", height: "1rem", borderRadius: "0.5rem", background: "#EEECEA" }} />
+            <div style={{ width: "72%", height: "1rem", borderRadius: "0.5rem", background: "#EEECEA" }} />
+            <div style={{ width: "80%", height: "1rem", borderRadius: "0.5rem", background: "#EEECEA", marginTop: "0.5rem" }} />
           </div>
+        ) : briefing.mode === "morning" ? (
+          <MorningBrief briefing={briefing} />
         ) : (
-          <div style={{ display: "flex", flexDirection: "column", gap: "1.375rem" }}>
-            <h2
-              style={{
-                fontFamily: "var(--font-playfair), Georgia, serif",
-                fontSize: "1.875rem",
-                color: "#181614",
-                letterSpacing: "-0.02em",
-                lineHeight: 1.1,
-                fontWeight: 400,
-              }}
-            >
-              {briefing.greeting}
-            </h2>
-
-            <div style={{ display: "flex", flexDirection: "column", gap: "0.625rem" }}>
-              {briefing.observations.map((obs, i) => (
-                <p key={i} style={{ fontSize: "0.9375rem", color: "#68645F", lineHeight: 1.8 }}>
-                  {obs}
-                </p>
-              ))}
-            </div>
-
-            <div>
-              <p style={{ fontSize: "0.78rem", fontWeight: 600, color: "#181614", letterSpacing: "0.04em", marginBottom: "1rem" }}>
-                Mijn aanbeveling voor vandaag:
-              </p>
-              <div style={{ display: "flex", flexDirection: "column", gap: "1.25rem" }}>
-                {briefing.recommendations.map(({ project, whyItMatters, whyNow, nextAction }) => (
-                  <div key={project} style={{ display: "flex", gap: "1rem", alignItems: "flex-start" }}>
-                    <span
-                      style={{
-                        width: 6,
-                        height: 6,
-                        borderRadius: "50%",
-                        background: "#A88A3A",
-                        flexShrink: 0,
-                        marginTop: "0.45rem",
-                      }}
-                    />
-                    <div style={{ display: "flex", flexDirection: "column", gap: "0.25rem" }}>
-                      <p style={{ fontSize: "0.9375rem", color: "#2A2724", fontWeight: 500, lineHeight: 1.3 }}>
-                        {project}
-                      </p>
-                      <p style={{ fontSize: "0.8125rem", color: "#68645F", lineHeight: 1.75 }}>
-                        {whyItMatters} {whyNow}
-                      </p>
-                      <p style={{ fontSize: "0.75rem", color: "#A88A3A", lineHeight: 1.6, marginTop: "0.1rem" }}>
-                        → {nextAction}
-                      </p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            <p style={{ fontSize: "0.9375rem", color: "#68645F", lineHeight: 1.8 }}>
-              {briefing.closingQuestion}
-            </p>
-          </div>
+          <DeepBrief briefing={briefing} />
         )}
 
         <div style={{ display: "flex", gap: "0.875rem", marginTop: "2.25rem" }}>
